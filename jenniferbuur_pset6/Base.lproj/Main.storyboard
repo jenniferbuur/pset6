@@ -36,7 +36,7 @@
                                 </tableViewCellContentView>
                                 <connections>
                                     <outlet property="groupName" destination="2CU-oO-aDS" id="fwA-sT-tqv"/>
-                                    <segue destination="PEJ-vX-nC2" kind="show" id="t3c-8i-WKx"/>
+                                    <segue destination="PEJ-vX-nC2" kind="show" identifier="BalanceView" id="t3c-8i-WKx"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -332,7 +332,7 @@
                                 <state key="normal" title="Paid off"/>
                                 <connections>
                                     <action selector="paidOffTo:" destination="Zz2-Kw-H79" eventType="touchUpInside" id="fc5-O9-K5S"/>
-                                    <segue destination="nK5-t9-thx" kind="show" id="Aze-mb-l2a"/>
+                                    <segue destination="nK5-t9-thx" kind="show" identifier="PaymentToView" id="Aze-mb-l2a"/>
                                 </connections>
                             </button>
                         </subviews>

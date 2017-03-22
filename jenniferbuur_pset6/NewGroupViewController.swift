@@ -32,7 +32,11 @@ class NewGroupViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         handle = FIRAuth.auth()?.addStateDidChangeListener() { (auth, user) in
-            self.alertUser(title: "Something went wrong", message: "Please try again")
+            self.user = user
+            
+            if user == nil {
+                self.alertUser(title: "Something went wrong", message: "Please try again")
+            }
         }
     }
     
@@ -45,6 +49,7 @@ class NewGroupViewController: UIViewController {
     @IBAction func addMember(_ sender: Any) {
         members.append(memberName.text!)
         memberView.isEditable = false
+        memberName.text = ""
         memberView.text = String(describing: members)
     }
     
@@ -52,11 +57,15 @@ class NewGroupViewController: UIViewController {
         guard let user = user else { return }
         
         let group = ref.child(user.uid).child("groups").childByAutoId()
-        group.setValue(["name": groupName.text!])
-//        for member in members {
-//            group.setValue(member)
-//            group.child(member).setValue(0)
-//        }
+        var newgroup = [String: AnyObject]()
+        newgroup["name"] = groupName.text! as AnyObject?
+        var count = 1
+        for member in members {
+            newgroup["\(count)"] = member as AnyObject?
+            newgroup["\(member)"] = 0 as AnyObject?
+            count += 1
+        }
+        group.setValue(newgroup)
     }
     
     func alertUser(title: String, message: String){

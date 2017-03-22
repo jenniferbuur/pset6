@@ -20,6 +20,7 @@ class PaymentViewController: UIViewController {
     var balances = [Int]()
     var groupname = String()
     var amountInt = Int()
+    var key = String()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,7 +35,11 @@ class PaymentViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         handle = FIRAuth.auth()?.addStateDidChangeListener() { (auth, user) in
-            self.alertUser(title: "Something went wrong", message: "Please try again")
+            self.user = user
+            
+            if user == nil {
+                self.alertUser(title: "Something went wrong", message: "Please try again")
+            }
         }
     }
     
@@ -49,14 +54,24 @@ class PaymentViewController: UIViewController {
             alertUser(title: "Not a valid amount", message: "Please fill in an valid amount")
             return
         } else {
+            guard let user = user else { return }
             amountInt = Int(amount.text!)!
+            ref.child(user.uid).child("groups").observe(.value, with: {snapshot in
+                for child in snapshot.children {
+                    let snapshotValue = (child as! FIRDataSnapshot).value as? NSDictionary
+                    if snapshotValue?["name"] as! String == self.groupname {
+                        self.key = (child as! FIRDataSnapshot).key
+                    }
+                }
+                
+            })
             for index in 0..<balances.count {
                 if index != member {
-                    balances[index] = balances[index] - amountInt/balances.count
+                    balances[index] -= amountInt/balances.count
                 } else {
-                    balances[index] = balances[index] + amountInt - amountInt/balances.count
+                    balances[index] += amountInt - amountInt/balances.count
                 }
-                self.ref.child((user?.uid)!).child(groupname).child(members[index]).setValue(balances[index])
+                self.ref.child(user.uid).child(groupname).child(key).child("\(members[index])").setValue(balances[index])
             }
         }
     }
@@ -68,6 +83,7 @@ class PaymentViewController: UIViewController {
         } else {
             amountInt = Int(amount.text!)!
         }
+        performSegue(withIdentifier: "PaymentToView", sender: self)
     }
     
     func alertUser(title: String, message: String){
@@ -80,9 +96,13 @@ class PaymentViewController: UIViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let navigationController = segue.destination as! UINavigationController
-        let paymentToViewController = navigationController.viewControllers.first! as! PaymentToViewController
-        paymentToViewController.fromMember = self.member
-        paymentToViewController.amount = self.amountInt
+        if segue.identifier == "PaymentToView" {
+            let paymentToViewController = segue.destination as! PaymentToViewController
+            paymentToViewController.members = self.members
+            paymentToViewController.balances = self.balances
+            paymentToViewController.groupname = self.groupname
+            paymentToViewController.fromMember = self.member
+            paymentToViewController.amount = self.amountInt
+        }
     }
 }

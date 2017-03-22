@@ -12,10 +12,11 @@ import Firebase
 class GroupViewController: UITableViewController {
     
     var ref: FIRDatabaseReference!
-    var groups: [FIRDataSnapshot] = []
+    var groups = [String]()
     var row = Int()
     var handle: FIRAuthStateDidChangeListenerHandle?
     var user = FIRAuth.auth()?.currentUser
+    var key = String()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,7 +54,8 @@ class GroupViewController: UITableViewController {
             self.groups.removeAll()
             
             for child in snapshot.children {
-                self.groups.append(child as! FIRDataSnapshot)
+                let snapshotValue = (child as! FIRDataSnapshot).value as? NSDictionary
+                self.groups.append((snapshotValue?["name"] as? String)!)
             }
             
             self.tableView.reloadData()
@@ -72,7 +74,7 @@ class GroupViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let newCell = tableView.dequeueReusableCell(withIdentifier: "groupCell") as! GroupTableViewCell
-        newCell.groupName.text = groups[indexPath.row].childSnapshot(forPath: "name").value as? String
+        newCell.groupName.text = groups[indexPath.row]
         return newCell
     }
     
@@ -83,8 +85,17 @@ class GroupViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if (editingStyle == UITableViewCellEditingStyle.delete) {
-            let item = groups[indexPath.row]
-//            ref.child((user?.uid)!).child(item).setValue(nil)
+            guard let user = user else { return }
+            ref.child(user.uid).child("groups").observe(.value, with: {snapshot in
+                for child in snapshot.children {
+                    let snapshotValue = child as? NSDictionary
+                    if snapshotValue?["name"] as! String == self.groups[indexPath.row] {
+                        self.key = (child as! FIRDataSnapshot).key
+                        self.ref.child(user.uid).child("groups").child(self.key).setValue(nil)
+                    }
+                }
+
+            })
             searchAll()
             tableView.deleteRows(at: [indexPath], with: .automatic)
         }
@@ -92,6 +103,7 @@ class GroupViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         row = indexPath.row
+        performSegue(withIdentifier: "BalanceView", sender: self)
     }
     
     func alertUser(title: String, message: String){
@@ -101,6 +113,13 @@ class GroupViewController: UITableViewController {
         alertController.addAction(okAction)
         present(alertController, animated: true, completion: nil)
         return
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "BalanceView" {
+            let balanceViewController = segue.destination as! BalanceViewController
+            balanceViewController.groupname = self.groups[row]
+        }
     }
 }
 

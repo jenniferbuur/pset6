@@ -20,6 +20,7 @@ class PaymentToViewController: UITableViewController {
     var groupname = String()
     var amount = Int()
     var row = Int()
+    var key = String()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,10 +35,13 @@ class PaymentToViewController: UITableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         handle = FIRAuth.auth()?.addStateDidChangeListener() { (auth, user) in
-            self.alertUser(title: "Something went wrong", message: "Please try again")
+            self.user = user
+            
+            if user == nil {
+                self.alertUser(title: "Something went wrong", message: "Please try again")
+            }
         }
     }
-    
     override func viewWillDisappear(_ animated: Bool) {
         guard let handle = handle else { return }
         
@@ -63,11 +67,21 @@ class PaymentToViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let user = user else { return }
         row = indexPath.row
+        ref.child(user.uid).child("groups").observe(.value, with: {snapshot in
+            for child in snapshot.children {
+                let snapshotValue = (child as! FIRDataSnapshot).value as? NSDictionary
+                if snapshotValue?["name"] as! String == self.groupname {
+                    self.key = (child as! FIRDataSnapshot).key
+                }
+            }
+            
+        })
         balances[row] = balances[row] - amount
-        ref.child((user?.uid)!).child(groupname).child(members[row]).setValue(balances[row])
+        ref.child(user.uid).child("groups").child(key).child(members[row]).setValue(balances[row])
         balances[fromMember] = balances[fromMember] + amount
-        ref.child((user?.uid)!).child(groupname).child(members[fromMember]).setValue(balances[fromMember])
+        ref.child(user.uid).child("groups").child(key).child(members[fromMember]).setValue(balances[fromMember])
     }
     
     func alertUser(title: String, message: String){

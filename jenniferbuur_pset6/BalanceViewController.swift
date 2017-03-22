@@ -32,7 +32,12 @@ class BalanceViewController: UITableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         handle = FIRAuth.auth()?.addStateDidChangeListener() { (auth, user) in
-            self.alertUser(title: "Something went wrong", message: "Please try again")
+            self.user = user
+            self.searchAll()
+            
+            if user == nil {
+                self.alertUser(title: "Something went wrong", message: "Please try again")
+            }
         }
     }
     
@@ -43,12 +48,18 @@ class BalanceViewController: UITableViewController {
     }
     
     func searchAll() {
-        ref.child((user?.uid)!).child(groupname).observe(.value, with: {snapshot in
+        guard let user = user else { return }
+        
+        ref.child(user.uid).child("groups").observe(.value, with: {snapshot in
             for child in snapshot.children {
-                self.members.append(child as! String)
-                self.ref.child((self.user?.uid)!).child(self.groupname).child(child as! String).observe(.value, with: {snapshot in
-                    self.balances.append(snapshot.value as! Int)
-                })
+                let snapshotValue = (child as! FIRDataSnapshot).value as! NSDictionary
+                if snapshotValue["name"] as? String == self.groupname {
+                    let count = (snapshotValue.count - 1)/2
+                    for i in 0..<count {
+                        self.members.append((snapshotValue["\(i)"] as? String)!)
+                        self.balances.append((snapshotValue["\(self.members[i])"] as? Int)!)
+                    }
+                }
             }
         })
     }
@@ -84,13 +95,7 @@ class BalanceViewController: UITableViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let navigationController = segue.destination as! UINavigationController
-        let paymentToViewController = navigationController.viewControllers.first! as! PaymentToViewController
-        paymentToViewController.fromMember = tableView.indexPathForSelectedRow!.row
-        paymentToViewController.members = self.members
-        paymentToViewController.balances = self.balances
-        paymentToViewController.groupname = self.groupname
-        let paymentViewController = navigationController.viewControllers.first! as! PaymentViewController
+        let paymentViewController = segue.destination as! PaymentViewController
         paymentViewController.member = tableView.indexPathForSelectedRow!.row
         paymentViewController.members = self.members
         paymentViewController.balances = self.balances
