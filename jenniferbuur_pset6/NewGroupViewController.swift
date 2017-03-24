@@ -66,6 +66,7 @@ class NewGroupViewController: UIViewController {
             count += 1
         }
         group.setValue(newgroup)
+        self.navigationController?.popViewController(animated: true)
     }
     
     func alertUser(title: String, message: String){

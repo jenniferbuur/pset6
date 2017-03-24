@@ -22,6 +22,8 @@ class BalanceViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         ref = FIRDatabase.database().reference()
+        searchAll()
+        tableView.reloadData()
         // Do any additional setup after loading the view.
     }
 
@@ -51,16 +53,19 @@ class BalanceViewController: UITableViewController {
         guard let user = user else { return }
         
         ref.child(user.uid).child("groups").observe(.value, with: {snapshot in
+            self.members.removeAll()
+            self.balances.removeAll()
             for child in snapshot.children {
                 let snapshotValue = (child as! FIRDataSnapshot).value as! NSDictionary
                 if snapshotValue["name"] as? String == self.groupname {
                     let count = (snapshotValue.count - 1)/2
-                    for i in 0..<count {
+                    for i in 1 ..< (count + 1) {
                         self.members.append((snapshotValue["\(i)"] as? String)!)
-                        self.balances.append((snapshotValue["\(self.members[i])"] as? Int)!)
+                        self.balances.append((snapshotValue["\(self.members[i - 1])"] as? Int)!)
                     }
                 }
             }
+            self.tableView.reloadData()
         })
     }
     

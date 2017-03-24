@@ -24,7 +24,7 @@ class PaymentViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        ref = FIRDatabase.database().reference()
         // Do any additional setup after loading the view.
     }
 
@@ -56,7 +56,13 @@ class PaymentViewController: UIViewController {
         } else {
             guard let user = user else { return }
             amountInt = Int(amount.text!)!
-            ref.child(user.uid).child("groups").observe(.value, with: {snapshot in
+            let groups = ref.child(user.uid).child("groups")
+            var handle: FIRDatabaseHandle? = nil
+            handle = groups.observe(.value, with: {snapshot in
+                if let handle = handle {
+                    groups.removeObserver(withHandle: handle)
+                }
+                
                 for child in snapshot.children {
                     let snapshotValue = (child as! FIRDataSnapshot).value as? NSDictionary
                     if snapshotValue?["name"] as! String == self.groupname {
@@ -64,15 +70,17 @@ class PaymentViewController: UIViewController {
                     }
                 }
                 
-            })
-            for index in 0..<balances.count {
-                if index != member {
-                    balances[index] -= amountInt/balances.count
-                } else {
-                    balances[index] += amountInt - amountInt/balances.count
+                for index in 0..<self.balances.count {
+                    if index != self.member {
+                        self.balances[index] -= self.amountInt/self.balances.count
+                    } else {
+                        self.balances[index] += self.amountInt - self.amountInt/self.balances.count
+                    }
+                    self.ref.child(user.uid).child("groups").child(self.key).child("\(self.members[index])").setValue(self.balances[index])
                 }
-                self.ref.child(user.uid).child(groupname).child(key).child("\(members[index])").setValue(balances[index])
-            }
+                
+                self.navigationController?.popViewController(animated: true)
+            })
         }
     }
     

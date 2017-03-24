@@ -96,6 +96,7 @@ class GroupViewController: UITableViewController {
                 }
 
             })
+            groups.remove(at: indexPath.row)
             searchAll()
             tableView.deleteRows(at: [indexPath], with: .automatic)
         }

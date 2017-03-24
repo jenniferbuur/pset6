@@ -24,7 +24,8 @@ class PaymentToViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        ref = FIRDatabase.database().reference()
+        tableView.reloadData()
         // Do any additional setup after loading the view.
     }
 
@@ -69,19 +70,26 @@ class PaymentToViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let user = user else { return }
         row = indexPath.row
-        ref.child(user.uid).child("groups").observe(.value, with: {snapshot in
+        let groups = ref.child(user.uid).child("groups")
+        var handle: FIRDatabaseHandle? = nil
+        handle = groups.observe(.value, with: {snapshot in
+            if let handle = handle {
+                groups.removeObserver(withHandle: handle)
+            }
             for child in snapshot.children {
                 let snapshotValue = (child as! FIRDataSnapshot).value as? NSDictionary
                 if snapshotValue?["name"] as! String == self.groupname {
                     self.key = (child as! FIRDataSnapshot).key
                 }
             }
-            
+            self.balances[self.row] = self.balances[self.row] - self.amount
+            self.ref.child(user.uid).child("groups").child(self.key).child("\(self.members[self.row])").setValue(self.balances[self.row])
+            self.balances[self.fromMember] = self.balances[self.fromMember] + self.amount
+            self.ref.child(user.uid).child("groups").child(self.key).child("\(self.members[self.fromMember])").setValue(self.balances[self.fromMember])
+            self.navigationController?.popViewController(animated: true)
+            self.navigationController?.popViewController(animated: true)
         })
-        balances[row] = balances[row] - amount
-        ref.child(user.uid).child("groups").child(key).child(members[row]).setValue(balances[row])
-        balances[fromMember] = balances[fromMember] + amount
-        ref.child(user.uid).child("groups").child(key).child(members[fromMember]).setValue(balances[fromMember])
+        
     }
     
     func alertUser(title: String, message: String){

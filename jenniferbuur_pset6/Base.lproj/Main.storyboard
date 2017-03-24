@@ -36,7 +36,6 @@
                                 </tableViewCellContentView>
                                 <connections>
                                     <outlet property="groupName" destination="2CU-oO-aDS" id="fwA-sT-tqv"/>
-                                    <segue destination="PEJ-vX-nC2" kind="show" identifier="BalanceView" id="t3c-8i-WKx"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -55,6 +54,7 @@
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                     <connections>
                         <outlet property="tableView" destination="7FT-R4-dDg" id="ijt-If-3ss"/>
+                        <segue destination="PEJ-vX-nC2" kind="show" identifier="BalanceView" id="maR-av-6gU"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DrH-ic-WsR" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -192,7 +192,6 @@
                                 <state key="normal" title="Log in"/>
                                 <connections>
                                     <action selector="logIn:" destination="4xH-tv-5tu" eventType="touchUpInside" id="VlA-hE-47C"/>
-                                    <segue destination="d1g-bZ-muT" kind="show" identifier="login" id="CAs-Ov-nds"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="w6W-Nj-szz">
@@ -211,6 +210,7 @@
                     <connections>
                         <outlet property="eMail" destination="dc2-mt-lQ8" id="EYM-CJ-Crj"/>
                         <outlet property="passWord" destination="cYI-dw-JeJ" id="AYc-0E-Eqf"/>
+                        <segue destination="d1g-bZ-muT" kind="show" identifier="login" id="oyG-fp-DZ8"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Vzd-NV-T7C" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -250,14 +250,14 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MJG-dd-8AQ">
-                                            <rect key="frame" x="8" y="12" width="42" height="21"/>
+                                            <rect key="frame" x="8" y="12" width="289" height="21"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Balance" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zoD-Ox-toC">
-                                            <rect key="frame" x="305" y="12" width="62" height="24"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Balance" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zoD-Ox-toC">
+                                            <rect key="frame" x="305" y="12" width="101" height="24"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
@@ -282,7 +282,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nhF-YF-cJk" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1172" y="572.56371814092961"/>
+            <point key="canvasLocation" x="1171.0144927536232" y="572.28260869565224"/>
         </scene>
         <!--Payment-->
         <scene sceneID="1hQ-wP-kDQ">
@@ -323,7 +323,6 @@
                                 <state key="normal" title="Add"/>
                                 <connections>
                                     <action selector="addToBalance:" destination="Zz2-Kw-H79" eventType="touchUpInside" id="c5E-Sc-JDD"/>
-                                    <segue destination="PEJ-vX-nC2" kind="show" id="4br-q1-cch"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZYX-BM-VXA">
@@ -332,7 +331,6 @@
                                 <state key="normal" title="Paid off"/>
                                 <connections>
                                     <action selector="paidOffTo:" destination="Zz2-Kw-H79" eventType="touchUpInside" id="fc5-O9-K5S"/>
-                                    <segue destination="nK5-t9-thx" kind="show" identifier="PaymentToView" id="Aze-mb-l2a"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -341,9 +339,8 @@
                     <toolbarItems/>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                     <connections>
-                        <outlet property="addToBalance" destination="ayI-Ab-Lcd" id="u5c-Fg-650"/>
                         <outlet property="amount" destination="Y7H-oL-Ofc" id="QTK-o8-5bc"/>
-                        <outlet property="paidOffTo" destination="ZYX-BM-VXA" id="qcM-kO-4TH"/>
+                        <segue destination="nK5-t9-thx" kind="show" identifier="PaymentToView" id="TBs-LI-Ht3"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zaP-Cb-Nl2" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -367,7 +364,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Sp0-aN-JkH">
-                                            <rect key="frame" x="8" y="11" width="42" height="21"/>
+                                            <rect key="frame" x="8" y="11" width="398" height="21"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
@@ -377,7 +374,6 @@
                                 </tableViewCellContentView>
                                 <connections>
                                     <outlet property="memberName" destination="Sp0-aN-JkH" id="Udm-Wq-D6X"/>
-                                    <segue destination="PEJ-vX-nC2" kind="show" id="fod-eM-5gW"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -390,11 +386,10 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="i0I-wL-seD" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2993" y="573"/>
+            <point key="canvasLocation" x="2992.753623188406" y="572.28260869565224"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="t3c-8i-WKx"/>
-        <segue reference="CAs-Ov-nds"/>
+        <segue reference="oyG-fp-DZ8"/>
     </inferredMetricsTieBreakers>
 </document>
